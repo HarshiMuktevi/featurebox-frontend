@@ -7,8 +7,11 @@ import GlassMorphCard from '../ui/GlassMorphCard';
 import ProgressIndicator from '../ui/ProgressIndicator';
 import { staggerContainer, staggerItem } from '@/utils/transitions';
 import { useForecast } from '@/context/ForecastContext';
+import axios from 'axios';
+
 
 const steps = ["Onboarding", "Data Source", "Model Selection", "Generated Forecast", "Dashboard"];
+
 
 const models = [
   {
@@ -47,12 +50,21 @@ const models = [
 
 const ModelSelectionScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { forecastType, forecastResult } = useForecast();
+
+  const {
+  forecastType,
+  uploadedFile,
+  forecastResult,
+  setForecastResult,
+  setIsUploadSuccessful
+  } = useForecast();
+  
+  
   const [recommendedModel, setRecommendedModel] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(true);
-  
+
   useEffect(() => {
     // Log the forecast type from context
     console.log('ModelSelectionScreen - Forecast Type:', forecastType);
@@ -83,9 +95,37 @@ const ModelSelectionScreen: React.FC = () => {
     navigate('/data-source');
   };
   
-  const handleContinue = () => {
+  // const handleContinue = () => {
+  //   navigate('/forecast-setup');
+  // };
+
+
+  const handleContinue = async () => {
+  if (!uploadedFile || !forecastType) {
+    alert("Missing uploaded file or forecast type");
+    return;
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append('file', uploadedFile);
+    formData.append('forecast_type', forecastType);
+
+    const response = await axios.post('https://featurebox-backend.onrender.com/forecast', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    setForecastResult(response.data);
+    setIsUploadSuccessful(true);
     navigate('/forecast-setup');
-  };
+  } catch (error) {
+    console.error('Forecast API call failed:', error);
+    alert("Forecast generation failed. Please try again.");
+  }
+};
+
 
   // Find the selected model details
   const selectedModelDetails = models.find(model => model.id === selectedModel) || models[0];
