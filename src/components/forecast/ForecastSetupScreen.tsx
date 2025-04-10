@@ -13,19 +13,49 @@ import { useForecast } from '@/context/ForecastContext';
 
 const steps = ["Onboarding", "Data Source", "Model Selection", "Generated Forecast", "Dashboard"];
 
+
+const ForecastSetupScreen: React.FC = () => {
+  const navigate = useNavigate();
+
+  // Destructure all context values properly
+  const {
+    forecastType,
+    uploadedFile,
+    forecastResult,
+  } = useForecast();
+
+  useEffect(() => {
+    console.log("Forecast Type:", forecastType);
+    console.log("Uploaded File:", uploadedFile?.name);
+    console.log("Forecast Result:", forecastResult);
+  }, [forecastType, uploadedFile, forecastResult]);
+
+  const forecastData = forecastResult?.prophet
+    ? [
+        {
+          sku: 'SHIRT-001',
+          name: 'Classic T-Shirt',
+          forecast: `${Math.round(forecastResult.prophet.forecast[0])} (${Math.round(forecastResult.prophet.lower_bound[0])} - ${Math.round(forecastResult.prophet.upper_bound[0])})`,
+          confidence: '95%',
+          stockout: 'None',
+          suggested: Math.round(forecastResult.prophet.forecast[0] * 1.1)
+        }
+      ]
+    : [];
+
 // Sample forecast data with products matching dashboard
-const forecastData = [
-  { sku: 'SHIRT-001', name: 'Classic T-Shirt', forecast: 450, confidence: '±25', stockout: 'None', suggested: 460 },
-  { sku: 'BAG-022', name: 'Canvas Tote Bag', forecast: 320, confidence: '±30', stockout: 'July 22', suggested: 340 },
-  { sku: 'SHOE-153', name: 'Running Sneakers', forecast: 180, confidence: '±20', stockout: 'None', suggested: 160 },
-  { sku: 'HAT-064', name: 'Baseball Cap', forecast: 210, confidence: '±15', stockout: 'None', suggested: 215 },
-  { sku: 'JACKET-045', name: 'Denim Jacket', forecast: 125, confidence: '±15', stockout: 'August 10', suggested: 130 },
-  { sku: 'ALX-001', name: 'Men\'s Basic Tee', forecast: 215, confidence: '±35', stockout: 'None', suggested: 250 },
-  { sku: 'ALX-002', name: 'Women\'s V-Neck Tee', forecast: 340, confidence: '±42', stockout: 'July 15', suggested: 400 },
-  { sku: 'ALX-003', name: 'Slim Fit Jeans', forecast: 120, confidence: '±18', stockout: 'None', suggested: 130 },
-  { sku: 'ALX-004', name: 'Hooded Sweatshirt', forecast: 85, confidence: '±12', stockout: 'None', suggested: 100 },
-  { sku: 'ALX-005', name: 'Casual Shorts', forecast: 175, confidence: '±28', stockout: 'July 22', suggested: 210 },
-];
+// const forecastData = [
+//   { sku: 'SHIRT-001', name: 'Classic T-Shirt', forecast: 450, confidence: '±25', stockout: 'None', suggested: 460 },
+//   { sku: 'BAG-022', name: 'Canvas Tote Bag', forecast: 320, confidence: '±30', stockout: 'July 22', suggested: 340 },
+//   { sku: 'SHOE-153', name: 'Running Sneakers', forecast: 180, confidence: '±20', stockout: 'None', suggested: 160 },
+//   { sku: 'HAT-064', name: 'Baseball Cap', forecast: 210, confidence: '±15', stockout: 'None', suggested: 215 },
+//   { sku: 'JACKET-045', name: 'Denim Jacket', forecast: 125, confidence: '±15', stockout: 'August 10', suggested: 130 },
+//   { sku: 'ALX-001', name: 'Men\'s Basic Tee', forecast: 215, confidence: '±35', stockout: 'None', suggested: 250 },
+//   { sku: 'ALX-002', name: 'Women\'s V-Neck Tee', forecast: 340, confidence: '±42', stockout: 'July 15', suggested: 400 },
+//   { sku: 'ALX-003', name: 'Slim Fit Jeans', forecast: 120, confidence: '±18', stockout: 'None', suggested: 130 },
+//   { sku: 'ALX-004', name: 'Hooded Sweatshirt', forecast: 85, confidence: '±12', stockout: 'None', suggested: 100 },
+//   { sku: 'ALX-005', name: 'Casual Shorts', forecast: 175, confidence: '±28', stockout: 'July 22', suggested: 210 },
+// ];
 
 // AI insights that match the products and forecasts
 const aiInsights = [
@@ -36,15 +66,15 @@ const aiInsights = [
   "Based on lead time analysis, order Denim Jackets at least 45 days before anticipated demand peaks."
 ];
 
-const ForecastSetupScreen: React.FC = () => {
-  const navigate = useNavigate();
-  const { forecastType, uploadedFile } = useForecast();
+// const ForecastSetupScreen: React.FC = () => {
+//   const navigate = useNavigate();
+//   const { forecastType, uploadedFile } = useForecast();
   
-  useEffect(() => {
-    // Log the forecast type from context
-    console.log('ForecastSetupScreen - Forecast Type:', forecastType);
-    console.log('ForecastSetupScreen - Uploaded File:', uploadedFile?.name);
-  }, [forecastType, uploadedFile]);
+  // useEffect(() => {
+  //   // Log the forecast type from context
+  //   console.log('ForecastSetupScreen - Forecast Type:', forecastType);
+  //   console.log('ForecastSetupScreen - Uploaded File:', uploadedFile?.name);
+  // }, [forecastType, uploadedFile]);
   
   const handleBack = () => {
     navigate('/model-selection');
