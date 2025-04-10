@@ -41,6 +41,17 @@ const ForecastSetupScreen: React.FC = () => {
           suggested: Math.round(forecastResult.prophet.forecast[0] * 1.1)
         }
       ]
+     : forecastResult?.sarima
+    ? [
+        {
+          sku: 'SHIRT-001',
+          name: 'Classic T-Shirt',
+          forecast: `${Math.round(forecastResult.sarima.forecast[0])} (${Math.round(forecastResult.sarima.lower_bound[0])} - ${Math.round(forecastResult.sarima.upper_bound[0])})`,
+          confidence: '95%',
+          stockout: 'None',
+          suggested: Math.round(forecastResult.sarima.forecast[0] * 1.1)
+        }
+      ]
     : [];
 
 // Sample forecast data with products matching dashboard
